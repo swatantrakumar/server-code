@@ -2,17 +2,20 @@ const express = require("express");
 const mongoose = require("mongoose");
 const UserModule = require("./modules/user");
 const cors = require("cors");
+const Logger = require("./handler/errorHandler");
 require('dotenv').config();
 
+const logger = new Logger("log/error","server.log");
 
 const app = express();
 app.use(cors())
 const serverStart = async () =>{
     try {
         const DB_HOST = process.env.DB_HOST;
-        const DB_NAME = process.env.DB_NAME;
+        const DB_NAME = process.env.DB_NAME;        
         await mongoose.connect(DB_HOST,{"dbName":DB_NAME});
         console.log("Database Connected.");
+        logger.info("Database Connected.");
         // console.log(check);
         app.use(express.json());
 
@@ -66,12 +69,15 @@ const serverStart = async () =>{
         })
 
         app.listen(3000,()=>{
-            console.log(`Now server is running on http://localhost:3000`);
+            const msg = `Now server is running on http://localhost:3000`;
+            console.log(msg);
+            logger.info(msg);
         })
 
     } catch (error) {
         console.log(error);
         console.log("Database not connected");
+        logger.error("Database not connected");
     }
 }
 
